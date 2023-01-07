@@ -19,6 +19,7 @@ export type ProductsContextType = {
   currentPage: number | undefined;
   totalPages: number | undefined;
   productId: number | undefined;
+  error: string;
   changeCurrentPage: (pageNumber: number) => void;
   changeProductsPerPage: (perPage: number) => void;
   filterById: (id: number) => void;

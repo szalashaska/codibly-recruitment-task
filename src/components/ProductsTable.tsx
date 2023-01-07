@@ -10,13 +10,20 @@ import {
   TableHead,
   TableHeader,
   TableRow,
+  EmptyData,
 } from "./ProductsTable.styled";
 
 function ProductsTable() {
-  const { productsData } = useContext(ProductsContext);
-  const [detailData, setDetailData] = useState<ProductType | null>(
-    productsData[0]
-  );
+  const { productsData, error } = useContext(ProductsContext);
+  const [detailData, setDetailData] = useState<ProductType | null>(null);
+
+  if (error)
+    return (
+      <div>
+        {error} <a href="/"> Refresh page</a>.
+      </div>
+    );
+
   return (
     <>
       <ProductsTableStyled>
@@ -29,13 +36,22 @@ function ProductsTable() {
             </TableRow>
           </TableHead>
           <TableBody>
-            {productsData.map((product) => (
-              <ProductRow
-                key={product.id}
-                product={product}
-                setDetailData={setDetailData}
-              />
-            ))}
+            {productsData.length > 0 ? (
+              productsData.map((product) => (
+                <ProductRow
+                  key={product.id}
+                  product={product}
+                  setDetailData={setDetailData}
+                />
+              ))
+            ) : (
+              <TableRow>
+                <EmptyData>
+                  There is no data to show.{" "}
+                  <a href="/">Go back to the first page</a>.
+                </EmptyData>
+              </TableRow>
+            )}
           </TableBody>
         </Table>
       </ProductsTableStyled>

@@ -25,6 +25,7 @@ const ProductsContext = createContext<ProductsContextType>({
   currentPage: undefined,
   totalPages: undefined,
   productId: undefined,
+  error: "",
   changeCurrentPage: () => {},
   changeProductsPerPage: () => {},
   filterById: () => {},
@@ -46,6 +47,7 @@ export function ProductsProvider({ children }: Props) {
   );
   const [productsPerPage, setProductsPerPage] =
     useState<number>(PRODUCTS_PER_PAGE);
+  const [error, setError] = useState<string>("");
   const totalProductsRef = useRef<number | undefined>(undefined);
   const totalPagesRef = useRef<number | undefined>(undefined);
 
@@ -88,6 +90,8 @@ export function ProductsProvider({ children }: Props) {
   const getProductsData: () => Promise<void> = useCallback(async () => {
     const endpoint = createURL();
 
+    setError("");
+
     try {
       const request = await fetch(endpoint);
       const response = await request.json();
@@ -100,9 +104,13 @@ export function ProductsProvider({ children }: Props) {
         totalPagesRef.current = total_pages;
 
         updatePageURL();
-      }
+      } else if (request.status === 404) {
+        setError("Wrong input provided.");
+      } else setError("Something went wrong...");
     } catch (err) {
-      console.log(err);
+      let message = "Unknown error occurred.";
+      if (err instanceof Error) message = err.message;
+      setError(message);
     }
   }, [createURL, updatePageURL]);
 
@@ -114,6 +122,7 @@ export function ProductsProvider({ children }: Props) {
     productId,
     productsData,
     currentPage,
+    error,
     totalPages: totalPagesRef.current,
     changeCurrentPage,
     changeProductsPerPage,

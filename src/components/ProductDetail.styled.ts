@@ -32,6 +32,7 @@ export const DetailDescribtion = styled.span`
 export const DetailText = styled.p`
   font-size: large;
   margin-bottom: 0.75rem;
+  text-transform: capitalize;
 `;
 
 export const CloseButton = styled.button.attrs(() => ({

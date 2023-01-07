@@ -6,7 +6,7 @@ function Pagination() {
   const { currentPage, totalPages, changeCurrentPage } =
     useContext(ProductsContext);
 
-  if (!currentPage || !totalPages) return null;
+  if (!currentPage || !totalPages || currentPage > totalPages) return null;
 
   const handlePageChange: (page: number) => void = (page) => {
     if (currentPage + page > totalPages || currentPage + page < 1) return;
