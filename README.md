@@ -8,9 +8,11 @@ Simple web app that uses example API. Created with React and TypeScript. You can
 
 ## Setup
 
-'''
+Clone this repository, install packages and run server. 
+
+```
 cd ./codibly-recruitment-task
 npm install
 ...
 npm start
-'''
+```
