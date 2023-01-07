@@ -19,7 +19,7 @@ function Pagination() {
         onClick={() => handlePageChange(-1)}
         disabled={currentPage === 1}
       >
-        PREV
+        &lt;
       </PaginationButton>
       <span>
         {currentPage} of {totalPages}
@@ -28,7 +28,7 @@ function Pagination() {
         onClick={() => handlePageChange(1)}
         disabled={currentPage + 1 > totalPages}
       >
-        NEXT
+        &gt;
       </PaginationButton>
     </PaginationStyled>
   );

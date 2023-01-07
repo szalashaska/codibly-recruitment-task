@@ -8,6 +8,10 @@ const GlobalStyles = createGlobalStyle`
   margin: 0;
   padding: 0;
 }
+body {
+  font-family: "Barlow Semi Condensed", sans-serif;
+}
+
 `;
 
 export default GlobalStyles;

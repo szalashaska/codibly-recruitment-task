@@ -3,21 +3,24 @@ import ProductsContext from "../contexts/ProductsContext";
 import { InputStyled, Label, UserInput } from "./Input.styled";
 
 function Input() {
-  const { filterById } = useContext(ProductsContext);
-  const [productId, setProductId] = useState<string>("");
+  const { filterById, productId } = useContext(ProductsContext);
+  const [userInput, setUserInput] = useState<string>(
+    productId ? `${productId}` : ""
+  );
 
   const handleUserInput: (input: string) => void = (input) => {
     if (isNaN(+input)) return;
-    setProductId(input);
+    setUserInput(input);
     filterById(+input);
   };
 
   return (
     <InputStyled>
       <Label htmlFor="users-input">
+        Filter by id:
         <UserInput
           id="users-input"
-          value={productId}
+          value={userInput}
           onChange={(e) => handleUserInput(e.target.value)}
         />
       </Label>

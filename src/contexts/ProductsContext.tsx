@@ -7,7 +7,6 @@ import {
   useState,
 } from "react";
 import {
-  ApiDataByIdType,
   ApiDataType,
   ProductsContextType,
   ProductType,
@@ -15,6 +14,7 @@ import {
 
 const BASE_URL = "https://reqres.in/api/products";
 const PRODUCTS_PER_PAGE = 5;
+const URL_PARAMS = new URLSearchParams(window.location.pathname);
 
 type Props = {
   children: ReactElement | ReactElement[];
@@ -22,8 +22,9 @@ type Props = {
 
 const ProductsContext = createContext<ProductsContextType>({
   productsData: [],
-  currentPage: null,
-  totalPages: null,
+  currentPage: undefined,
+  totalPages: undefined,
+  productId: undefined,
   changeCurrentPage: () => {},
   changeProductsPerPage: () => {},
   filterById: () => {},
@@ -31,13 +32,22 @@ const ProductsContext = createContext<ProductsContextType>({
 export default ProductsContext;
 
 export function ProductsProvider({ children }: Props) {
-  const [productId, setProductId] = useState<number | null>(null);
+  const checkUrlParams: (param: string) => number | undefined = (param) => {
+    const urlParam = URL_PARAMS.get(param);
+    return urlParam && !isNaN(+urlParam) ? +urlParam : undefined;
+  };
+
+  const [productId, setProductId] = useState<number | undefined>(
+    checkUrlParams("/id")
+  );
   const [productsData, setProductsData] = useState<ProductType[]>([]);
-  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [currentPage, setCurrentPage] = useState<number>(
+    checkUrlParams("/page") || 1
+  );
   const [productsPerPage, setProductsPerPage] =
     useState<number>(PRODUCTS_PER_PAGE);
-  const totalProductsRef = useRef<number | null>(null);
-  const totalPagesRef = useRef<number | null>(null);
+  const totalProductsRef = useRef<number | undefined>(undefined);
+  const totalPagesRef = useRef<number | undefined>(undefined);
 
   const changeCurrentPage: (pageNumber: number) => void = useCallback(
     (pageNumber) => {
@@ -59,38 +69,21 @@ export function ProductsProvider({ children }: Props) {
 
   const createURL: () => URL = useCallback(() => {
     const url = new URL(BASE_URL);
-    url.searchParams.append("page", currentPage.toString());
-    url.searchParams.append("per_page", productsPerPage.toString());
-    // url.searchParams.append("id", "1");
+    if (productId) {
+      url.searchParams.append("id", productId.toString());
+    } else {
+      url.searchParams.append("page", currentPage.toString());
+      url.searchParams.append("per_page", productsPerPage.toString());
+    }
 
     return url;
-  }, [productsPerPage, currentPage]);
+  }, [productsPerPage, currentPage, productId]);
 
   const updatePageURL: () => void = useCallback(() => {
     if (productId) {
       window.history.replaceState(null, "", `id=${productId}`);
     } else window.history.replaceState(null, "", `page=${currentPage}`);
   }, [currentPage, productId]);
-
-  const getProductById: () => Promise<void> = useCallback(async () => {
-    const endpoint = `${BASE_URL}?id=${productId}`;
-
-    try {
-      const request = await fetch(endpoint);
-      const response = await request.json();
-
-      if (request.ok) {
-        const { data } = response as ApiDataByIdType;
-        setProductsData([data]);
-        totalProductsRef.current = null;
-        totalPagesRef.current = null;
-
-        updatePageURL();
-      }
-    } catch (err) {
-      console.log(err);
-    }
-  }, [updatePageURL, productId]);
 
   const getProductsData: () => Promise<void> = useCallback(async () => {
     const endpoint = createURL();
@@ -101,7 +94,8 @@ export function ProductsProvider({ children }: Props) {
 
       if (request.ok) {
         const { data, total, total_pages } = response as ApiDataType;
-        setProductsData(data);
+
+        setProductsData(Array.isArray(data) ? data : [data]);
         totalProductsRef.current = total;
         totalPagesRef.current = total_pages;
 
@@ -113,11 +107,11 @@ export function ProductsProvider({ children }: Props) {
   }, [createURL, updatePageURL]);
 
   useEffect(() => {
-    if (productId) getProductById();
-    else getProductsData();
-  }, [getProductsData, changeCurrentPage, getProductById, productId]);
+    getProductsData();
+  }, [getProductsData]);
 
   const contextData = {
+    productId,
     productsData,
     currentPage,
     totalPages: totalPagesRef.current,

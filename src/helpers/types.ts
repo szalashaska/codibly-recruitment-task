@@ -7,21 +7,18 @@ export type ProductType = {
 };
 
 export type ApiDataType = {
-  data: ProductType[];
-  page: number;
-  per_page: number;
-  total: number;
-  total_pages: number;
-};
-
-export type ApiDataByIdType = {
-  data: ProductType;
+  data: ProductType[] | ProductType;
+  page?: number;
+  per_page?: number;
+  total?: number;
+  total_pages?: number;
 };
 
 export type ProductsContextType = {
   productsData: ProductType[];
-  currentPage: number | null;
-  totalPages: number | null;
+  currentPage: number | undefined;
+  totalPages: number | undefined;
+  productId: number | undefined;
   changeCurrentPage: (pageNumber: number) => void;
   changeProductsPerPage: (perPage: number) => void;
   filterById: (id: number) => void;
