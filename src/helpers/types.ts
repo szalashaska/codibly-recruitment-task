@@ -16,9 +16,9 @@ export type ApiDataType = {
 
 export type ProductsContextType = {
   productsData: ProductType[];
-  currentPage: number | undefined;
-  totalPages: number | undefined;
-  productId: number | undefined;
+  currentPage?: number;
+  totalPages?: number;
+  productId?: number;
   error: string;
   changeCurrentPage: (pageNumber: number) => void;
   changeProductsPerPage: (perPage: number) => void;

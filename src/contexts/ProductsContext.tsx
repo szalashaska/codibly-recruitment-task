@@ -12,6 +12,7 @@ import {
   ProductType,
 } from "../helpers/types";
 
+// Constant values
 const BASE_URL = "https://reqres.in/api/products";
 const PRODUCTS_PER_PAGE = 5;
 const URL_PARAMS = new URLSearchParams(window.location.pathname);
@@ -22,9 +23,6 @@ type Props = {
 
 const ProductsContext = createContext<ProductsContextType>({
   productsData: [],
-  currentPage: undefined,
-  totalPages: undefined,
-  productId: undefined,
   error: "",
   changeCurrentPage: () => {},
   changeProductsPerPage: () => {},
@@ -34,6 +32,7 @@ export default ProductsContext;
 
 export function ProductsProvider({ children }: Props) {
   const checkUrlParams: (param: string) => number | undefined = (param) => {
+    // Checks if user provided id or page number in URL
     const urlParam = URL_PARAMS.get(param);
     return urlParam && !isNaN(+urlParam) ? +urlParam : undefined;
   };
@@ -69,7 +68,7 @@ export function ProductsProvider({ children }: Props) {
     setProductId(id);
   }, []);
 
-  const createURL: () => URL = useCallback(() => {
+  const createEndpointURL: () => URL = useCallback(() => {
     const url = new URL(BASE_URL);
     if (productId) {
       url.searchParams.append("id", productId.toString());
@@ -88,8 +87,9 @@ export function ProductsProvider({ children }: Props) {
   }, [currentPage, productId]);
 
   const getProductsData: () => Promise<void> = useCallback(async () => {
-    const endpoint = createURL();
+    // Calls API for data
 
+    const endpoint = createEndpointURL();
     setError("");
 
     try {
@@ -112,7 +112,7 @@ export function ProductsProvider({ children }: Props) {
       if (err instanceof Error) message = err.message;
       setError(message);
     }
-  }, [createURL, updatePageURL]);
+  }, [createEndpointURL, updatePageURL]);
 
   useEffect(() => {
     getProductsData();
