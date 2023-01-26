@@ -9,7 +9,7 @@ export const AppStyled = styled.main`
 export const MaxWidthWrapper = styled.div`
   margin-inline: auto;
   max-width: 1000px;
-  height: 100;
+  height: 100%;
   padding: 1rem;
   @media screen and (min-width: 700px) {
     padding: 2rem;
